@@ -34,3 +34,16 @@ target_link_libraries(TogglAppTest PRIVATE
     gtest_main gtest
     X11
 )
+
+set(ONLINE_TEST_SOURCE_FILES
+    online_test.cc
+)
+add_executable(TogglOnlineTest ${ONLINE_TEST_SOURCE_FILES})
+target_link_libraries(TogglOnlineTest PRIVATE
+    TogglDesktopLibrary
+    ${JSONCPP_LIBRARIES}
+    ${LUA_LIBRARIES}
+    PocoCrypto PocoDataSQLite PocoNetSSL PocoFoundation
+    gtest_main gtest
+    X11
+)
