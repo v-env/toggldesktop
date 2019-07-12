@@ -90,7 +90,7 @@ test::App::App() {
 
     context_ = toggl_context_init("tests", "0.1");
 
-    Dispatcher::wireUp(context_);
+    Dispatcher::wireUp(context_, this);
 
     poco_assert(toggl_set_db_path(context_, TESTDB));
 
@@ -155,4 +155,112 @@ void test::App::login(std::string name, std::string password) {
 
 void test::App::logout() {
     toggl_logout(context_);
+}
+
+void test::App::on_app(bool open) {
+    WHEREAMI;
+}
+
+void test::App::on_pomodoro(const std::string &title, const std::string &informative_text) {
+    WHEREAMI;
+}
+
+void test::App::on_pomodoro_break(const std::string &title, const std::string &informative_text) {
+    WHEREAMI;
+}
+
+void test::App::on_sync_state(const int64_t sync_state) {
+    WHEREAMI;
+}
+
+void test::App::on_update(const std::string &url) {
+    WHEREAMI;
+}
+
+void test::App::on_unsynced_items(const int64_t count) {
+    WHEREAMI;
+}
+
+void test::App::on_error(const std::string &errmsg, bool user_error) {
+    WHEREAMI;
+}
+
+void test::App::on_online_state(const int64_t state) {
+    WHEREAMI;
+}
+
+void test::App::on_url(const std::string &url) {
+    WHEREAMI;
+}
+
+void test::App::on_login(bool open, const uint64_t user_id) {
+    WHEREAMI;
+}
+
+void test::App::on_reminder(const std::string &title, const std::string &informative_text) {
+    WHEREAMI;
+}
+
+void test::App::on_help_articles(const std::list<test::HelpArticle> &list) {
+    WHEREAMI;
+}
+
+void test::App::on_time_entry_list(bool open, const std::list<test::TimeEntry> &list, bool show_load_more) {
+    WHEREAMI;
+}
+
+void test::App::on_time_entry_autocomplete(const std::list<test::Autocomplete> &list) {
+    WHEREAMI;
+}
+
+void test::App::on_mini_timer_autocomplete(const std::list<test::Autocomplete> &list) {
+    WHEREAMI;
+}
+
+void test::App::on_project_autocomplete(const std::list<test::Autocomplete> &list) {
+    WHEREAMI;
+}
+
+void test::App::on_client_select(const std::list<test::Client> &list) {
+    WHEREAMI;
+}
+
+void test::App::on_workspace_select(const std::list<test::Workspace> &list) {
+    WHEREAMI;
+}
+
+void test::App::on_tags(const std::list<test::Tag> &list) {
+    WHEREAMI;
+}
+
+void test::App::on_time_entry_editor(bool open, const test::TimeEntry &te, const std::string &focused_field_name) {
+    WHEREAMI;
+}
+
+void test::App::on_display_settings(bool open, const test::Settings &settings) {
+    WHEREAMI;
+}
+
+void test::App::on_project_colors(const std::list<std::string> &color_list, const uint64_t color_count) {
+    WHEREAMI;
+}
+
+void test::App::on_obm_experiment(const uint64_t nr, bool included, bool seen) {
+    WHEREAMI;
+}
+
+void test::App::on_display_timer_state(const test::TimeEntry &te) {
+    WHEREAMI;
+}
+
+void test::App::on_display_idle_notification(const std::string &guid, const std::string &since, const std::string &duration, const uint64_t started, const std::string &description) {
+    WHEREAMI;
+}
+
+void test::App::on_countries(const std::list<test::Country> &list) {
+    WHEREAMI;
+    std::cerr << "Received countries!" << std::endl;
+    for (auto i : list) {
+        std::cerr << "Country ID: " << i.id_ << ": " << i.name_ << std::endl;
+    }
 }
