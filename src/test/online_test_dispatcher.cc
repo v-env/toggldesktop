@@ -5,10 +5,11 @@
 
 #include "online_test_model.h"
 #include "online_test.h"
+#include "online_test_app.h"
 
 namespace test {
 
-std::deque<std::pair<std::function<void(std::vector<TestType>)>, std::vector<TestType>> > Dispatcher::tasks;
+std::deque<std::pair<std::function  <void(std::vector<TestType>)>, std::vector<TestType>> > Dispatcher::tasks;
 std::mutex Dispatcher::tasks_lock;
 App *Dispatcher::app = nullptr;
 

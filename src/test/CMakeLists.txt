@@ -37,6 +37,7 @@ target_link_libraries(TogglAppTest PRIVATE
 
 set(ONLINE_TEST_SOURCE_FILES
     online_test.cc
+    online_test_app.cpp
     online_test_dispatcher.cc
     online_test_model.cc
 )
