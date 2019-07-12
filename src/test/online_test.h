@@ -3,7 +3,7 @@
 #ifndef SRC_ONLINE_TEST_H_
 #define SRC_ONLINE_TEST_H_
 
-//#include "gtest/gtest.h"
+#include "gtest/gtest.h"
 #include "../toggl_api.h"
 
 #include "online_test_model.h"

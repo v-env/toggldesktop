@@ -42,6 +42,7 @@ std::string test::App::randomString(size_t length) {
 }
 
 std::string test::App::randomUser() {
+    srand(time(nullptr));
     return "toggldesktop-test-" + randomString(8) + "@" + randomString(16) + ".com";
 }
 
@@ -58,6 +59,7 @@ void App::getCountries() {
 
 void test::App::uiStart() {
     toggl_ui_start(context_);
+    isStarted_ = true;
     test::Dispatcher::dispatch();
 }
 
@@ -66,7 +68,6 @@ bool App::isStarted() const {
 }
 
 bool test::App::signup(std::string name, std::string password, const Country &country) {
-    std::cerr << "Attempting to create user \"" << name << "\" with password \"" << password << "\"" << std::endl;
     toggl_signup(context_, name.c_str(), password.c_str(), country.id_);
 }
 

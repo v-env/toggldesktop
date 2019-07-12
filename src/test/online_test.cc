@@ -24,6 +24,45 @@
 #include "Poco/Thread.h"
 #include "Poco/Event.h"
 
+
+static test::App *app;
+
+static std::string name { test::App::randomUser() };
+static std::string pass { test::App::randomPassword() };
+
+TEST(Base, Initialize) {
+    std::cout << "Will test with the following credentials:" << std::endl;
+    std::cout << "Username: " << name << std::endl;
+    std::cout << "Password: " << pass << std::endl;
+    app = new test::App;
+    ASSERT_TRUE(app);
+    app->uiStart();
+    ASSERT_TRUE(app->isStarted());
+}
+
+TEST(Base, GetCountries) {
+    app->getCountries();
+    ASSERT_FALSE(app->countries().empty());
+}
+
+TEST(Base, Register) {
+    ASSERT_TRUE(app->signup(name, pass));
+    ASSERT_TRUE(app->isLoggedIn());
+}
+
+TEST(Base, LogOut) {
+    ASSERT_TRUE(app->isLoggedIn());
+    ASSERT_TRUE(app->logout());
+    ASSERT_FALSE(app->isLoggedIn());
+}
+
+TEST(Base, LogIn) {
+    ASSERT_FALSE(app->isLoggedIn());
+    ASSERT_TRUE(app->login(name, pass));
+    ASSERT_TRUE(app->isLoggedIn());
+}
+
+/*
 int main(int argc, char **argv) {
     srand(time(nullptr));
 
@@ -32,6 +71,7 @@ int main(int argc, char **argv) {
     if (f.exists()) {
         f.remove(false);
     }
+
 
     test::App *app = new test::App;
 
@@ -52,6 +92,7 @@ int main(int argc, char **argv) {
 
     //toggl_create_client(app->context_, workspace, "Client Eastwood");
     //test::Dispatcher::dispatch();
+    */
 /*
     auto guid_1 = toggl_start(app->context_, "First", "", 0, 0, nullptr, nullptr, false);
     test::Dispatcher::dispatch();
@@ -72,8 +113,10 @@ int main(int argc, char **argv) {
     auto guid_3 = toggl_start(app->context_, "Third", "", 0, 0, nullptr, nullptr, false);
     test::Dispatcher::dispatch();
 */
+/*
     while (true) {
         test::Dispatcher::dispatch();
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 }
+*/
