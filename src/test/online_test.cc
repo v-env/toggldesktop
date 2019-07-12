@@ -24,17 +24,8 @@
 #include "Poco/Thread.h"
 #include "Poco/Event.h"
 
-
-static Poco::Event *semaphore = new Poco::Event();
-static std::map<uint64_t, std::string> countries;
-static uint64_t workspace = 0;
-test::App *app;
-
-
-
 int main(int argc, char **argv) {
     srand(time(nullptr));
-    semaphore->reset();
 
     std::cerr << "Starting\n";
     Poco::File f(TESTDB);
@@ -42,7 +33,7 @@ int main(int argc, char **argv) {
         f.remove(false);
     }
 
-    app = new test::App;
+    test::App *app = new test::App;
     test::Dispatcher::dispatch();
 
     app->uiStart();
@@ -59,8 +50,8 @@ int main(int argc, char **argv) {
     app->login(name, pass);
     test::Dispatcher::dispatch();
 
-    toggl_create_client(app->context_, workspace, "Client Eastwood");
-    test::Dispatcher::dispatch();
+    //toggl_create_client(app->context_, workspace, "Client Eastwood");
+    //test::Dispatcher::dispatch();
 
     auto guid_1 = toggl_start(app->context_, "First", "", 0, 0, nullptr, nullptr, false);
     test::Dispatcher::dispatch();
