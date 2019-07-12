@@ -98,6 +98,10 @@ struct Settings : public Model {
 private:
 };
 
+inline bool operator<(const test::Country &l, const test::Country &r) {
+    return l.name_ < r.name_;
+}
+
 } // namespace test
 
 #endif // ONLINE_TEST_MODEL_H

@@ -302,6 +302,19 @@ void Dispatcher::dispatch() {
     }
 }
 
+void Dispatcher::waitForEvents() {
+    while (true) {
+        std::unique_lock l(tasks_lock);
+        if (tasks.empty()) {
+            l.unlock();
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            continue;
+        }
+        dispatch();
+        break;
+    }
+}
+
 void Dispatcher::wireUp(void *context, App *app) {
     Dispatcher::app = app;
 

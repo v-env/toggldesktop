@@ -39,11 +39,14 @@ typedef std::variant<
 
 class Dispatcher {
 public:
+    // wireUp is the initialization method that hooks up to the library callbacks
+    static void wireUp(void *context, App *app);
+
     // dispatch looks if there are any pending calls from the library and executes them on the calling thread
     static void dispatch();
 
-    // wireUp is the initialization method that hooks up to the library callbacks
-    static void wireUp(void *context, App *app);
+    // waits for when new events appear in the queue and executes them
+    static void waitForEvents();
 
 private:
     // all of these methods get called by the "dispatch" method

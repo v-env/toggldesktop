@@ -9,7 +9,10 @@
 
 namespace test {
 
-struct App {
+class Dispatcher;
+
+class App {
+public:
     App();
     ~App();
 
@@ -18,18 +21,36 @@ struct App {
     static std::string randomPassword();
 
     void uiStart();
+    bool isStarted() const;
 
-    void signup(std::string name, std::string password, Country *country = nullptr);
+    bool signup(std::string name, std::string password, const Country &country);
+    bool signup(std::string name, std::string password);
+    bool login(std::string name, std::string password);
+    bool logout();
+    bool isLoggedIn() const;
 
-    void login(std::string name, std::string password);
-    void logout();
+    const std::set<Country> &countries();
 
+private:
     void *context_;
 
-    std::set<Country*> countries_;
+    bool isStarted_;
+
+    std::string loggedInEmail_;
+    uint64_t loggedInId_;
+
+    std::set<Country> countries_;
+    std::set<Workspace> workspaces_;
+    std::set<Project> projects_;
+    std::set<Client> clients_;
+    std::set<TimeEntry> timeEntries_;
+    std::set<Tag> tags_;
+    std::set<Autocomplete> timeEntryAutocomplete_;
+    std::set<Autocomplete> miniTimerAutocomplete_;
+    std::set<Autocomplete> projectAutocomplete_;
 
     // callbacks
-
+    friend class Dispatcher;
     void on_app(bool open);
     void on_pomodoro(const std::string &title, const std::string &informative_text);
     void on_pomodoro_break(const std::string &title, const std::string &informative_text);

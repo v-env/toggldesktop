@@ -37,22 +37,28 @@ int main(int argc, char **argv) {
     test::Dispatcher::dispatch();
 
     app->uiStart();
-    test::Dispatcher::dispatch();
+    while (app->countries().size() <= 0) {
+        test::Dispatcher::waitForEvents();
+    }
 
     std::string name = test::App::randomUser();
     std::string pass = test::App::randomPassword();
     app->signup(name, pass);
     test::Dispatcher::dispatch();
 
+    std::cerr << "Is user logged in: " << app->isLoggedIn();
+
     app->logout();
     test::Dispatcher::dispatch();
+    std::cerr << "Is user logged in: " << app->isLoggedIn();
 
     app->login(name, pass);
     test::Dispatcher::dispatch();
+    std::cerr << "Is user logged in: " << app->isLoggedIn();
 
     //toggl_create_client(app->context_, workspace, "Client Eastwood");
     //test::Dispatcher::dispatch();
-
+/*
     auto guid_1 = toggl_start(app->context_, "First", "", 0, 0, nullptr, nullptr, false);
     test::Dispatcher::dispatch();
     toggl_stop(app->context_, false);
@@ -71,7 +77,7 @@ int main(int argc, char **argv) {
     test::Dispatcher::dispatch();
     auto guid_3 = toggl_start(app->context_, "Third", "", 0, 0, nullptr, nullptr, false);
     test::Dispatcher::dispatch();
-
+*/
     while (true) {
         test::Dispatcher::dispatch();
         std::this_thread::sleep_for(std::chrono::seconds(1));

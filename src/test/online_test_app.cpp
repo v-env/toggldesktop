@@ -53,31 +53,40 @@ void test::App::uiStart() {
     toggl_ui_start(context_);
 }
 
-void test::App::signup(std::string name, std::string password, Country *country) {
-    // if there's no country, pick a random one
-    if (!country) {
-        if (countries_.size() > 0) {
-            auto it = countries_.begin();
-            std::advance(it, static_cast<size_t>(rand()) % countries_.size());
-            country = *it;
-        }
-        else {
-            // !!!
-        }
-    }
+bool App::isStarted() const {
+    return isStarted_;
+}
+
+bool test::App::signup(std::string name, std::string password, const Country &country) {
     std::cerr << "Attempting to create user \"" << name << "\" with password \"" << password << "\"" << std::endl;
-    if (!country)
-        toggl_signup(context_, name.c_str(), password.c_str(), 1);
-    else
-        toggl_signup(context_, name.c_str(), password.c_str(), country->id_);
+    toggl_signup(context_, name.c_str(), password.c_str(), country.id_);
 }
 
-void test::App::login(std::string name, std::string password) {
-    toggl_login(context_, name.c_str(), password.c_str());
+bool App::signup(std::string name, std::string password) {
+    if (countries_.empty()) {
+        std::cerr << "Cannot register when countries are empty" << std::endl;
+        return false;
+    }
+    // choose a random one
+    auto it = countries_.begin();
+    std::advance(it, static_cast<size_t>(rand()) % countries_.size());
+    return signup(name, password, *it);
 }
 
-void test::App::logout() {
-    toggl_logout(context_);
+bool test::App::login(std::string name, std::string password) {
+    return toggl_login(context_, name.c_str(), password.c_str());
+}
+
+bool test::App::logout() {
+    return toggl_logout(context_);
+}
+
+bool App::isLoggedIn() const {
+    return loggedInId_ > 0 && !loggedInEmail_.empty();
+}
+
+const std::set<Country> &App::countries() {
+    return countries_;
 }
 
 void test::App::on_app(bool open) {
@@ -119,6 +128,8 @@ void test::App::on_url(const std::string &url) {
 
 void test::App::on_login(bool open, const uint64_t user_id) {
     WHEREAMI;
+    loggedInId_ = user_id;
+    loggedInEmail_ = toggl_get_user_email(context_);
 }
 
 void test::App::on_reminder(const std::string &title, const std::string &informative_text) {
@@ -183,9 +194,8 @@ void test::App::on_display_idle_notification(const std::string &guid, const std:
 
 void test::App::on_countries(const std::list<test::Country> &list) {
     WHEREAMI;
-    std::cerr << "Received countries!" << std::endl;
     for (auto i : list) {
-        std::cerr << "Country ID: " << i.id_ << ": " << i.name_ << std::endl;
+        countries_.insert(i);
     }
 }
 
