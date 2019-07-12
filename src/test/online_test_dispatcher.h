@@ -16,16 +16,35 @@ namespace test {
 class App;
 
 // define the possible argument types here so we can use std::visit eventually (possible with std::variant but not with std::any)
-typedef std::variant<bool, int64_t, uint64_t, std::string, std::list<std::string>, Settings, TimeEntry, std::list<Settings>, std::list<TimeEntry>,
-    std::list<HelpArticle>, std::list<Autocomplete>, std::list<Tag>, std::list<Project>, std::list<Client>, std::list<Workspace>, std::list<Country>> TestType;
+typedef std::variant<
+    bool,
+    int64_t,
+    uint64_t,
+    std::string,
+    // string list is used for the project color list
+    std::list<std::string>,
+    // settings is passed in a single object
+    Settings,
+    // TimeEntry can be passed singular on in a list
+    TimeEntry,
+    std::list<TimeEntry>,
+    std::list<HelpArticle>,
+    std::list<Autocomplete>,
+    std::list<Tag>,
+    std::list<Project>,
+    std::list<Client>,
+    std::list<Workspace>,
+    std::list<Country>
+> TestType;
 
 class Dispatcher {
 public:
-
     // dispatch looks if there are any pending calls from the library and executes them on the calling thread
     static void dispatch();
+
     // wireUp is the initialization method that hooks up to the library callbacks
     static void wireUp(void *context, App *app);
+
 private:
     // all of these methods get called by the "dispatch" method
     // they get called in the same thread that called the "dispatch" method (that means main, in case of this test)
