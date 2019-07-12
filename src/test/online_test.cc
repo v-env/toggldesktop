@@ -183,6 +183,7 @@ void test::App::on_unsynced_items(const int64_t count) {
 
 void test::App::on_error(const std::string &errmsg, bool user_error) {
     WHEREAMI;
+    std::cerr << "ERROR: " << errmsg << std::endl;
 }
 
 void test::App::on_online_state(const int64_t state) {
