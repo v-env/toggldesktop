@@ -32,32 +32,32 @@ private:
     // i'm using embedded classes because the calls look prettier then
     class Main {
     public:
-        static void on_app(const std::vector<TestType> &args/*const bool_t open*/);
-        static void on_pomodoro(const std::vector<TestType> &args/*const char_t *title, const char_t *informative_text*/);
-        static void on_pomodoro_break(const std::vector<TestType> &args/*const char_t *title, const char_t *informative_text*/);
-        static void on_sync_state(const std::vector<TestType> &args/*const int64_t sync_state*/);
-        static void on_update(const std::vector<TestType> &args/*const char_t *url*/);
-        static void on_unsynced_items(const std::vector<TestType> &args/*const int64_t count*/);
-        static void on_error(const std::vector<TestType> &args/*const char *errmsg, const bool_t user_error*/);
-        static void on_online_state(const std::vector<TestType> &args /*const int64_t state*/);
-        static void on_url(const std::vector<TestType> &args /*const char *url*/);
-        static void on_login(const std::vector<TestType> &args /*const bool_t open, const uint64_t user_id*/);
-        static void on_reminder(const std::vector<TestType> &args /*const char *title, const char *informative_text*/);
-        static void on_help_articles(const std::vector<TestType> &args /*TogglHelpArticleView *first*/);
-        static void on_time_entry_list(const std::vector<TestType> &args /*const bool_t open, TogglTimeEntryView *first, const bool_t show_load_more*/);
-        static void on_time_entry_autocomplete(const std::vector<TestType> &args /*TogglAutocompleteView *first*/);
-        static void on_mini_timer_autocomplete(const std::vector<TestType> &args /*TogglAutocompleteView *first*/);
-        static void on_project_autocomplete(const std::vector<TestType> &args /*TogglAutocompleteView *first*/);
-        static void on_client_select(const std::vector<TestType> &args /*TogglGenericView *first*/);
-        static void on_workspace_select(const std::vector<TestType> &args /*TogglGenericView *first*/);
-        static void on_tags(const std::vector<TestType> &args /*TogglGenericView *first*/);
-        static void on_time_entry_editor(const std::vector<TestType> &args /*const bool_t open, TogglTimeEntryView *te, const char *focused_field_name*/);
-        static void on_display_settings(const std::vector<TestType> &args /*const bool_t open, TogglSettingsView *settings*/);
-        static void on_project_colors(const std::vector<TestType> &args /*string_list_t color_list, const uint64_t color_count*/);
-        static void on_obm_experiment(const std::vector<TestType> &args /*const uint64_t nr, const bool_t included, const bool_t seen*/);
-        static void on_display_timer_state(const std::vector<TestType> &args /*TogglTimeEntryView *te*/);
-        static void on_display_idle_notification(const std::vector<TestType> &args /*const char *guid, const char *since, const char *duration, const uint64_t started, const char *description*/);
-        static void on_countries(const std::vector<TestType> &args /*TogglCountryView *first*/);
+        static void on_app(const std::vector<TestType> &args);
+        static void on_pomodoro(const std::vector<TestType> &args);
+        static void on_pomodoro_break(const std::vector<TestType> &args);
+        static void on_sync_state(const std::vector<TestType> &args);
+        static void on_update(const std::vector<TestType> &args);
+        static void on_unsynced_items(const std::vector<TestType> &args);
+        static void on_error(const std::vector<TestType> &args);
+        static void on_online_state(const std::vector<TestType> &args);
+        static void on_url(const std::vector<TestType> &args);
+        static void on_login(const std::vector<TestType> &args);
+        static void on_reminder(const std::vector<TestType> &args);
+        static void on_help_articles(const std::vector<TestType> &args);
+        static void on_time_entry_list(const std::vector<TestType> &args);
+        static void on_time_entry_autocomplete(const std::vector<TestType> &args);
+        static void on_mini_timer_autocomplete(const std::vector<TestType> &args);
+        static void on_project_autocomplete(const std::vector<TestType> &args);
+        static void on_client_select(const std::vector<TestType> &args);
+        static void on_workspace_select(const std::vector<TestType> &args);
+        static void on_tags(const std::vector<TestType> &args);
+        static void on_time_entry_editor(const std::vector<TestType> &args);
+        static void on_display_settings(const std::vector<TestType> &args);
+        static void on_project_colors(const std::vector<TestType> &args);
+        static void on_obm_experiment(const std::vector<TestType> &args);
+        static void on_display_timer_state(const std::vector<TestType> &args);
+        static void on_display_idle_notification(const std::vector<TestType> &args);
+        static void on_countries(const std::vector<TestType> &args);
     };
 
     // all of the methods here are called from the library directly
