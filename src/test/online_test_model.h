@@ -7,7 +7,7 @@
 #include <list>
 
 // a helper macro that will spit out the file, line and method to stderr when reached
-#define WHEREAMI do {std::cerr << __FILE__ << ":" << __LINE__ << "\t- " << __PRETTY_FUNCTION__ << std::endl; std::cerr.flush(); } while(0)
+#define WHEREAMI // do {std::cerr << __FILE__ << ":" << __LINE__ << "\t- " << __PRETTY_FUNCTION__ << std::endl; std::cerr.flush(); } while(0)
 
 namespace test {
 

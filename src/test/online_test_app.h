@@ -20,6 +20,9 @@ public:
     static std::string randomUser();
     static std::string randomPassword();
 
+    void getCountries();
+    const std::set<Country> &countries();
+
     void uiStart();
     bool isStarted() const;
 
@@ -29,7 +32,6 @@ public:
     bool logout();
     bool isLoggedIn() const;
 
-    const std::set<Country> &countries();
 
 private:
     void *context_;

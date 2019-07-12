@@ -34,27 +34,21 @@ int main(int argc, char **argv) {
     }
 
     test::App *app = new test::App;
-    test::Dispatcher::dispatch();
+
+    app->getCountries();
 
     app->uiStart();
-    while (app->countries().size() <= 0) {
-        test::Dispatcher::waitForEvents();
-    }
 
     std::string name = test::App::randomUser();
     std::string pass = test::App::randomPassword();
     app->signup(name, pass);
-    test::Dispatcher::dispatch();
-
-    std::cerr << "Is user logged in: " << app->isLoggedIn();
+    std::cerr << "Is user logged in: " << app->isLoggedIn() << std::endl;
 
     app->logout();
-    test::Dispatcher::dispatch();
-    std::cerr << "Is user logged in: " << app->isLoggedIn();
+    std::cerr << "Is user logged in: " << app->isLoggedIn() << std::endl;
 
     app->login(name, pass);
-    test::Dispatcher::dispatch();
-    std::cerr << "Is user logged in: " << app->isLoggedIn();
+    std::cerr << "Is user logged in: " << app->isLoggedIn() << std::endl;
 
     //toggl_create_client(app->context_, workspace, "Client Eastwood");
     //test::Dispatcher::dispatch();

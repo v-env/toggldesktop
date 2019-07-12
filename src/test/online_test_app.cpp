@@ -20,7 +20,7 @@ test::App::App() {
     Poco::Path path("src/ssl/cacert.pem");
     toggl_set_cacert_path(context_, path.toString().c_str());
 
-    toggl_get_countries(context_);
+    Dispatcher::dispatch();
 }
 
 test::App::~App()
@@ -49,8 +49,16 @@ std::string test::App::randomPassword() {
     return randomString(16);
 }
 
+void App::getCountries() {
+    toggl_get_countries(context_);
+    while (countries_.size() <= 0) {
+        test::Dispatcher::waitForEvents();
+    }
+}
+
 void test::App::uiStart() {
     toggl_ui_start(context_);
+    test::Dispatcher::dispatch();
 }
 
 bool App::isStarted() const {
@@ -70,15 +78,21 @@ bool App::signup(std::string name, std::string password) {
     // choose a random one
     auto it = countries_.begin();
     std::advance(it, static_cast<size_t>(rand()) % countries_.size());
-    return signup(name, password, *it);
+    auto ret = signup(name, password, *it);
+    test::Dispatcher::dispatch();
+    return ret;
 }
 
 bool test::App::login(std::string name, std::string password) {
-    return toggl_login(context_, name.c_str(), password.c_str());
+    auto ret = toggl_login(context_, name.c_str(), password.c_str());
+    test::Dispatcher::dispatch();
+    return ret;
 }
 
 bool test::App::logout() {
-    return toggl_logout(context_);
+    auto ret = toggl_logout(context_);
+    test::Dispatcher::dispatch();
+    return ret;
 }
 
 bool App::isLoggedIn() const {
