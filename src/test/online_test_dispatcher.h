@@ -119,7 +119,7 @@ private:
                 std::function<void(std::vector<TestType>)>, // void functions that take a list of any objects as an argument
                 std::vector<TestType>>                      // and the list of any objects
            > tasks;
-    static std::mutex tasks_lock;                           // mutex to protect concurrent access to the list of tasks
+    static std::recursive_mutex tasks_lock;                 // mutex to protect concurrent access to the list of tasks
     static App *app;
 };
 

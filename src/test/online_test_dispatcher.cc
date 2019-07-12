@@ -10,7 +10,7 @@
 namespace test {
 
 std::deque<std::pair<std::function  <void(std::vector<TestType>)>, std::vector<TestType>> > Dispatcher::tasks;
-std::mutex Dispatcher::tasks_lock;
+std::recursive_mutex Dispatcher::tasks_lock;
 App *Dispatcher::app = nullptr;
 
 void Dispatcher::Main::on_app(const std::vector<TestType> &args) {
