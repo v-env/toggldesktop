@@ -73,7 +73,6 @@ private:
 
 struct TimeEntry : public Model {
     TimeEntry(const TogglTimeEntryView *view = nullptr);
-    static TimeEntry *start(void *context, const std::string &name);
 private:
     TimeEntry(const std::string &name, uint64_t id = 0) : Model(name, id) {}
 };

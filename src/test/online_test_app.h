@@ -21,7 +21,7 @@ public:
     static std::string randomPassword();
 
     void getCountries();
-    const std::set<Country> &countries();
+    const std::set<Country> &countries() const;
 
     void uiStart();
     bool isStarted() const;
@@ -32,6 +32,8 @@ public:
     bool logout();
     bool isLoggedIn() const;
 
+    std::string start(const std::string &description);
+    const TimeEntry &runningTimeEntry() const;
 
 private:
     void *context_;
@@ -45,6 +47,7 @@ private:
     std::set<Workspace> workspaces_;
     std::set<Project> projects_;
     std::set<Client> clients_;
+    TimeEntry runningTimeEntry_;
     std::set<TimeEntry> timeEntries_;
     std::set<Tag> tags_;
     std::set<Autocomplete> timeEntryAutocomplete_;

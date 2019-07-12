@@ -100,7 +100,17 @@ bool App::isLoggedIn() const {
     return loggedInId_ > 0 && !loggedInEmail_.empty();
 }
 
-const std::set<Country> &App::countries() {
+std::string App::start(const std::string &description) {
+    auto ret = toggl_start(context_, description.c_str(), "", 0, 0, nullptr, nullptr, 0);
+    test::Dispatcher::dispatch();
+    return ret;
+}
+
+const TimeEntry &App::runningTimeEntry() const {
+    return runningTimeEntry_;
+}
+
+const std::set<Country> &App::countries() const {
     return countries_;
 }
 
@@ -201,6 +211,7 @@ void test::App::on_obm_experiment(const uint64_t nr, bool included, bool seen) {
 
 void test::App::on_display_timer_state(const test::TimeEntry &te) {
     WHEREAMI;
+    runningTimeEntry_ = te;
 }
 
 void test::App::on_display_idle_notification(const std::string &guid, const std::string &since, const std::string &duration, const uint64_t started, const std::string &description) {

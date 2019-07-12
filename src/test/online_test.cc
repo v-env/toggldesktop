@@ -62,6 +62,13 @@ TEST(Base, LogIn) {
     ASSERT_TRUE(app->isLoggedIn());
 }
 
+TEST(TimeEntry, Start) {
+    auto guid = app->start("Time Entry");
+    ASSERT_FALSE(guid.empty());
+    ASSERT_EQ(app->runningTimeEntry().name_, "Time Entry");
+    ASSERT_EQ(app->runningTimeEntry().guid_, guid);
+}
+
 /*
 int main(int argc, char **argv) {
     srand(time(nullptr));

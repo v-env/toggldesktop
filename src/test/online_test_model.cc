@@ -61,15 +61,9 @@ test::Client *test::Client::create(void *context, const std::string &name, test:
 test::TimeEntry::TimeEntry(const TogglTimeEntryView *view)
     : Model(view ? view->Description : "", view ? view->ID : 0)
 {
-
-}
-
-test::TimeEntry *test::TimeEntry::start(void *context, const std::string &name) {
-    if (!context)
-        return nullptr;
-    auto te = new test::TimeEntry(name);
-    te->guid_ = toggl_start(context, name.c_str(), "", 0, 0, nullptr, nullptr, false);
-    return te;
+    if (view) {
+        guid_ = view->GUID;
+    }
 }
 
 test::Workspace::Workspace(const TogglGenericView *view)
