@@ -46,35 +46,22 @@ struct Model {
 };
 
 struct Country : public Model {
-    static Country *fromView(TogglCountryView *view);
     Country(const TogglCountryView *view);
-private:
-    Country(const std::string &name, uint64_t id = 0);
 };
 
 struct Workspace : public Model {
     Workspace(const TogglGenericView *view);
-    static Workspace *fromView(TogglGenericView *view);
-private:
-    Workspace(const std::string &name, uint64_t id = 0) : Model(name, id) {}
 };
 
 struct Client : public Model {
     Client(const TogglGenericView *view);
-    static Client *create(void *context, const std::string &name, Workspace *workspace);
-private:
-    Client(const std::string &name, uint64_t id = 0) : Model(name, id) {}
 };
 
 struct Project : public Model {
-private:
-    Project(const std::string &name, uint64_t id = 0) : Model(name, id) {}
 };
 
 struct TimeEntry : public Model {
     TimeEntry(const TogglTimeEntryView *view = nullptr);
-private:
-    TimeEntry(const std::string &name, uint64_t id = 0) : Model(name, id) {}
 };
 
 struct Tag : public Model {

@@ -2,20 +2,8 @@
 
 namespace test {
 
-test::Country *test::Country::fromView(TogglCountryView *view) {
-    if (!view || !view->Name)
-        return nullptr;
-    return new test::Country(view->Name, view->ID);
-}
-
 test::Country::Country(const TogglCountryView *view)
     : Model(view ? view->Name : "INVALID", view ? view->ID : 0)
-{
-
-}
-
-test::Country::Country(const std::string &name, uint64_t id)
-    : Model(name, id)
 {
 
 }
@@ -50,14 +38,6 @@ test::Client::Client(const TogglGenericView *view)
 
 }
 
-test::Client *test::Client::create(void *context, const std::string &name, test::Workspace *workspace) {
-    if (!context || !workspace)
-        return nullptr;
-    auto c = new test::Client(name);
-    c->guid_ = toggl_create_client(context, workspace->id_, name.c_str());
-    return c;
-}
-
 test::TimeEntry::TimeEntry(const TogglTimeEntryView *view)
     : Model(view ? view->Description : "", view ? view->ID : 0)
 {
@@ -71,12 +51,5 @@ test::Workspace::Workspace(const TogglGenericView *view)
 {
 
 }
-
-test::Workspace *test::Workspace::fromView(TogglGenericView *view) {
-    if (!view || !view->WorkspaceName)
-        return nullptr;
-    return new test::Workspace(view->WorkspaceName, view->WID);
-}
-
 
 } // namespace test
