@@ -1,0 +1,97 @@
+#ifndef ONLINE_TEST_DISPATCHER_H
+#define ONLINE_TEST_DISPATCHER_H
+
+#include "../toggl_api.h"
+
+#include <list>
+#include <any>
+#include <mutex>
+#include <deque>
+#include <functional>
+
+namespace test {
+
+class Dispatcher {
+public:
+    // dispatch looks if there are any pending calls from the library and executes them on the calling thread
+    static void dispatch();
+    // wireUp is the initialization method that hooks up to the library callbacks
+    static void wireUp(void *context);
+private:
+    // all of these methods get called by the "dispatch" method
+    // they get called in the same thread that called the "dispatch" method (that means main, in case of this test)
+    // i'm using embedded classes because the calls look prettier then
+    class Main {
+    public:
+        static void on_app(const std::list<std::any> &args/*const bool_t open*/);
+        static void on_pomodoro(const std::list<std::any> &args/*const char_t *title, const char_t *informative_text*/);
+        static void on_pomodoro_break(const std::list<std::any> &args/*const char_t *title, const char_t *informative_text*/);
+        static void on_sync_state(const std::list<std::any> &args/*const int64_t sync_state*/);
+        static void on_update(const std::list<std::any> &args/*const char_t *url*/);
+        static void on_unsynced_items(const std::list<std::any> &args/*const int64_t count*/);
+        static void on_error(const std::list<std::any> &args/*const char *errmsg, const bool_t user_error*/);
+        static void on_online_state(const std::list<std::any> &args /*const int64_t state*/);
+        static void on_url(const std::list<std::any> &args /*const char *url*/);
+        static void on_login(const std::list<std::any> &args /*const bool_t open, const uint64_t user_id*/);
+        static void on_reminder(const std::list<std::any> &args /*const char *title, const char *informative_text*/);
+        static void on_help_articles(const std::list<std::any> &args /*TogglHelpArticleView *first*/);
+        static void on_time_entry_list(const std::list<std::any> &args /*const bool_t open, TogglTimeEntryView *first, const bool_t show_load_more*/);
+        static void on_time_entry_autocomplete(const std::list<std::any> &args /*TogglAutocompleteView *first*/);
+        static void on_mini_timer_autocomplete(const std::list<std::any> &args /*TogglAutocompleteView *first*/);
+        static void on_project_autocomplete(const std::list<std::any> &args /*TogglAutocompleteView *first*/);
+        static void on_client_select(const std::list<std::any> &args /*TogglGenericView *first*/);
+        static void on_workspace_select(const std::list<std::any> &args /*TogglGenericView *first*/);
+        static void on_tags(const std::list<std::any> &args /*TogglGenericView *first*/);
+        static void on_time_entry_editor(const std::list<std::any> &args /*const bool_t open, TogglTimeEntryView *te, const char *focused_field_name*/);
+        static void on_display_settings(const std::list<std::any> &args /*const bool_t open, TogglSettingsView *settings*/);
+        static void on_project_colors(const std::list<std::any> &args /*string_list_t color_list, const uint64_t color_count*/);
+        static void on_obm_experiment(const std::list<std::any> &args /*const uint64_t nr, const bool_t included, const bool_t seen*/);
+        static void on_display_timer_state(const std::list<std::any> &args /*TogglTimeEntryView *te*/);
+        static void on_display_idle_notification(const std::list<std::any> &args /*const char *guid, const char *since, const char *duration, const uint64_t started, const char *description*/);
+        static void on_countries(const std::list<std::any> &args /*TogglCountryView *first*/);
+    };
+
+    // all of the methods here are called from the library directly
+    // it is safe to assume they don't get called from the main thread
+    class Worker {
+    public:
+        static void on_app(const bool_t open);
+        static void on_pomodoro(const char_t *title, const char_t *informative_text);
+        static void on_pomodoro_break(const char_t *title, const char_t *informative_text);
+        static void on_sync_state(const int64_t sync_state);
+        static void on_update(const char_t *url);
+        static void on_unsynced_items(const int64_t count);
+        static void on_error(const char *errmsg, const bool_t user_error);
+        static void on_online_state(const int64_t state);
+        static void on_url(const char *url);
+        static void on_login(const bool_t open, const uint64_t user_id);
+        static void on_reminder(const char *title, const char *informative_text);
+        static void on_help_articles(TogglHelpArticleView *first);
+        static void on_time_entry_list(const bool_t open, TogglTimeEntryView *first, const bool_t show_load_more);
+        static void on_time_entry_autocomplete(TogglAutocompleteView *first);
+        static void on_mini_timer_autocomplete(TogglAutocompleteView *first);
+        static void on_project_autocomplete(TogglAutocompleteView *first);
+        static void on_client_select(TogglGenericView *first);
+        static void on_workspace_select(TogglGenericView *first);
+        static void on_tags(TogglGenericView *first);
+        static void on_time_entry_editor(const bool_t open, TogglTimeEntryView *te, const char *focused_field_name);
+        static void on_display_settings(const bool_t open, TogglSettingsView *settings);
+        static void on_project_colors(string_list_t color_list, const uint64_t color_count);
+        static void on_obm_experiment(const uint64_t nr, const bool_t included, const bool_t seen);
+        static void on_display_timer_state(TogglTimeEntryView *te);
+        static void on_display_idle_notification(const char *guid, const char *since, const char *duration, const uint64_t started, const char *description);
+        static void on_countries(TogglCountryView *first);
+    };
+
+    static std::deque<                                    // double ended queue
+            std::pair<                                    // of pairs consisting of:
+                std::function<void(std::list<std::any>)>, // void functions that take a list of any objects as an argument
+                std::list<std::any>>                      // and the list of any objects
+           > tasks;
+    static std::mutex tasks_lock;                         // mutex to protect concurrent access to the list of tasks
+};
+
+} // namespace test
+
+
+#endif // ONLINE_TEST_DISPATCHER_H

@@ -6,6 +6,9 @@
 //#include "gtest/gtest.h"
 #include "../toggl_api.h"
 
+#include "online_test_model.h"
+#include "online_test_dispatcher.h"
+
 #include <string>
 #include <set>
 #include <algorithm>
@@ -35,43 +38,6 @@ struct App {
 
     std::set<Country*> countries_;
 };
-
-struct Model {
-    Model(const std::string &name, uint64_t id = 0) : name_(name), id_(id) {}
-    std::string name_;
-    uint64_t id_ { 0 };
-    std::string guid_ {""};
-};
-
-struct Country : public Model {
-    static Country *fromView(TogglCountryView *view);
-private:
-    Country(const std::string &name, uint64_t id = 0);
-};
-
-struct Workspace : public Model {
-    static Workspace *fromView(TogglGenericView *view);
-private:
-    Workspace(const std::string &name, uint64_t id = 0) : Model(name, id) {}
-};
-
-struct Client : public Model {
-    static Client *create(void *context, const std::string &name, Workspace *workspace);
-private:
-    Client(const std::string &name, uint64_t id = 0) : Model(name, id) {}
-};
-
-struct Project : public Model {
-private:
-    Project(const std::string &name, uint64_t id = 0) : Model(name, id) {}
-};
-
-struct TimeEntry : public Model {
-    static TimeEntry *start(void *context, const std::string &name);
-private:
-    TimeEntry(const std::string &name, uint64_t id = 0) : Model(name, id) {}
-};
-
 
 } // namespace test
 
