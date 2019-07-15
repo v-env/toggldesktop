@@ -9,11 +9,11 @@
 namespace test {
 
 test::App::App() {
-    toggl_set_log_path("test.log");
-
     context_ = toggl_context_init("tests", "0.1");
 
     Dispatcher::wireUp(context_, this);
+
+    toggl_set_log_path("test.log");
 
     poco_assert(toggl_set_db_path(context_, TESTDB));
 
@@ -108,6 +108,12 @@ std::string App::start(const std::string &description) {
 
 const TimeEntry &App::runningTimeEntry() const {
     return runningTimeEntry_;
+}
+
+bool App::stop() {
+    auto ret = toggl_stop(context_, 0);
+    test::Dispatcher::dispatch();
+    return ret;
 }
 
 const std::set<Country> &App::countries() const {
@@ -223,6 +229,18 @@ void test::App::on_countries(const std::list<test::Country> &list) {
     for (auto i : list) {
         countries_.insert(i);
     }
+}
+
+void App::on_display_overlay(const int64_t type) {
+    WHEREAMI;
+}
+
+void App::on_display_promotion(const int64_t promotion_type) {
+    WHEREAMI;
+}
+
+void App::on_display_update_download_state(const std::string &version, const int64_t download_state) {
+    WHEREAMI;
 }
 
 } // namespace test

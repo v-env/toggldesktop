@@ -134,86 +134,85 @@ void Dispatcher::Main::on_countries(const std::vector<TestType> &args) {
     app->on_countries(std::get<std::list<Country>>(args[0]));
 }
 
-void Dispatcher::Worker::on_app(const bool_t open) {
+void Dispatcher::Main::on_display_overlay(const std::vector<TestType> &args) {
+    app->on_display_overlay(std::get<int64_t>(args[0]));
+}
 
+void Dispatcher::Main::on_display_promotion(const std::vector<TestType> &args) {
+    app->on_display_promotion(std::get<int64_t>(args[0]));
+}
+
+void Dispatcher::Main::on_display_update_download_state(const std::vector<TestType> &args) {
+    app->on_display_update_download_state(std::get<std::string>(args[0]),
+                                          std::get<int64_t>(args[1]));
+}
+
+void Dispatcher::Worker::on_app(const bool_t open) {
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::make_pair( Main::on_app, std::vector<TestType>{ static_cast<bool>(open) } ));
 }
 
 void Dispatcher::Worker::on_pomodoro(const char_t *title, const char_t *informative_text) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_pomodoro, std::vector<TestType>{ std::string(title), std::string(informative_text) } ));
 }
 
 void Dispatcher::Worker::on_pomodoro_break(const char_t *title, const char_t *informative_text) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_pomodoro_break, std::vector<TestType>{ std::string(title), std::string(informative_text) } ));
 }
 
 void Dispatcher::Worker::on_sync_state(const int64_t sync_state) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_sync_state, std::vector<TestType>{ sync_state } ));
 }
 
 void Dispatcher::Worker::on_unsynced_items(const int64_t count) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_unsynced_items, std::vector<TestType>{ count } ));
 }
 
 void Dispatcher::Worker::on_online_state(const int64_t state) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_online_state, std::vector<TestType>{ state } ));
 }
 
 void Dispatcher::Worker::on_url(const char *url) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_url, std::vector<TestType>{ std::string(url) } ));
 }
 
 void Dispatcher::Worker::on_reminder(const char *title, const char *informative_text) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_reminder, std::vector<TestType>{ std::string(title), std::string(informative_text) } ));
 }
 
 void Dispatcher::Worker::on_help_articles(TogglHelpArticleView *first) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_help_articles, std::vector<TestType>{ listFromView<test::HelpArticle>(first) } ));
 }
 
 void Dispatcher::Worker::on_time_entry_autocomplete(TogglAutocompleteView *first) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_time_entry_autocomplete, std::vector<TestType>{ listFromView<test::Autocomplete>(first) } ));
 }
 
 void Dispatcher::Worker::on_mini_timer_autocomplete(TogglAutocompleteView *first) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_mini_timer_autocomplete, std::vector<TestType>{ listFromView<test::Autocomplete>(first) } ));
 }
 
 void Dispatcher::Worker::on_project_autocomplete(TogglAutocompleteView *first) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_project_autocomplete, std::vector<TestType>{ listFromView<test::Autocomplete>(first) } ));
 }
 
 void Dispatcher::Worker::on_client_select(TogglGenericView *first) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_client_select, std::vector<TestType>{ listFromView<test::Client>(first) } ));
 }
 
 void Dispatcher::Worker::on_workspace_select(TogglGenericView *first) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_workspace_select, std::vector<TestType>{ listFromView<test::Workspace>(first) } ));
 }
@@ -225,69 +224,73 @@ void Dispatcher::Worker::on_tags(TogglGenericView *first) {
 }
 
 void Dispatcher::Worker::on_project_colors(string_list_t color_list, const uint64_t color_count) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_project_colors, std::vector<TestType>{ listFromView<std::string, char**>(color_list), color_count } ));
 }
 
 void Dispatcher::Worker::on_display_timer_state(TogglTimeEntryView *te) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_display_timer_state, std::vector<TestType>{ oneFromView<test::TimeEntry>(te) } ));
 }
 
 void Dispatcher::Worker::on_display_idle_notification(const char *guid, const char *since, const char *duration, const uint64_t started, const char *description) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_display_idle_notification, std::vector<TestType>{ std::string(guid), std::string(since), std::string(duration), started, std::string(description) } ));
 }
 
 void Dispatcher::Worker::on_countries(TogglCountryView *first) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_countries, std::vector<TestType>{ listFromView<test::Country>(first) } ));
 }
 
 void Dispatcher::Worker::on_obm_experiment(const uint64_t nr, const bool_t included, const bool_t seen) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_obm_experiment, std::vector<TestType>{ nr, static_cast<bool>(included), static_cast<bool>(seen) } ));
 }
 
 void Dispatcher::Worker::on_display_settings(const bool_t open, TogglSettingsView *settings) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_display_settings, std::vector<TestType>{ static_cast<bool>(open), oneFromView<test::Settings>(settings) } ));
 }
 
 void Dispatcher::Worker::on_time_entry_editor(const bool_t open, TogglTimeEntryView *te, const char *focused_field_name) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_time_entry_editor, std::vector<TestType>{ static_cast<bool>(open), oneFromView<test::TimeEntry>(te), std::string(focused_field_name) } ));
 }
 
 void Dispatcher::Worker::on_time_entry_list(const bool_t open, TogglTimeEntryView *first, const bool_t show_load_more) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_time_entry_list, std::vector<TestType>{ static_cast<bool>(open), listFromView<test::TimeEntry>(first), static_cast<bool>(show_load_more) } ));
 }
 
 void Dispatcher::Worker::on_login(const bool_t open, const uint64_t user_id) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_login, std::vector<TestType>{ static_cast<bool>(open), user_id } ));
 }
 
 void Dispatcher::Worker::on_error(const char *errmsg, const bool_t user_error) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_error, std::vector<TestType>{ std::string(errmsg), static_cast<bool>(user_error) } ));
 }
 
 void Dispatcher::Worker::on_update(const char_t *url) {
-
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_update, std::vector<TestType>{ std::string(url) } ));
+}
+
+void Dispatcher::Worker::on_display_overlay(const int64_t type) {
+    std::scoped_lock l(tasks_lock);
+    tasks.emplace_back(std::pair( Main::on_display_overlay, std::vector<TestType>{ type } ));
+}
+
+void Dispatcher::Worker::on_display_promotion(const int64_t promotion_type) {
+    std::scoped_lock l(tasks_lock);
+    tasks.emplace_back(std::pair( Main::on_display_promotion, std::vector<TestType>{ promotion_type } ));
+}
+
+void Dispatcher::Worker::on_display_update_download_state(const char *version, const int64_t download_state) {
+    std::scoped_lock l(tasks_lock);
+    tasks.emplace_back(std::pair( Main::on_display_update_download_state, std::vector<TestType>{ std::string(version), download_state } ));
 }
 
 void Dispatcher::dispatch() {
@@ -344,6 +347,9 @@ void Dispatcher::wireUp(void *context, App *app) {
     toggl_on_pomodoro(context, Worker::on_pomodoro);
     toggl_on_pomodoro_break(context, Worker::on_pomodoro_break);
     toggl_on_countries(context, Worker::on_countries);
+    toggl_on_overlay(context, Worker::on_display_overlay);
+    toggl_on_promotion(context, Worker::on_display_promotion);
+    toggl_on_update_download_state(context, Worker::on_display_update_download_state);
 }
 
 } // namespace test

@@ -80,6 +80,9 @@ private:
         static void on_display_timer_state(const std::vector<TestType> &args);
         static void on_display_idle_notification(const std::vector<TestType> &args);
         static void on_countries(const std::vector<TestType> &args);
+        static void on_display_overlay(const std::vector<TestType> &args);
+        static void on_display_promotion(const std::vector<TestType> &args);
+        static void on_display_update_download_state(const std::vector<TestType> &args);
     };
 
     // all of the methods here are called from the library directly
@@ -112,6 +115,9 @@ private:
         static void on_display_timer_state(TogglTimeEntryView *te);
         static void on_display_idle_notification(const char *guid, const char *since, const char *duration, const uint64_t started, const char *description);
         static void on_countries(TogglCountryView *first);
+        static void on_display_overlay(const int64_t type);
+        static void on_display_promotion(const int64_t promotion_type);
+        static void on_display_update_download_state(const char_t *version, const int64_t download_state);
     };
 
     static std::deque<                                      // double ended queue

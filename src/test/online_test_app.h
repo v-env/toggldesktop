@@ -34,6 +34,7 @@ public:
 
     std::string start(const std::string &description);
     const TimeEntry &runningTimeEntry() const;
+    bool stop();
 
 private:
     void *context_;
@@ -82,6 +83,9 @@ private:
     void on_display_timer_state(const TimeEntry &te);
     void on_display_idle_notification(const std::string &guid, const std::string &since, const std::string &duration, const uint64_t started, const std::string &description);
     void on_countries(const std::list<Country> &list);
+    void on_display_overlay(const int64_t type);
+    void on_display_promotion(const int64_t promotion_type);
+    void on_display_update_download_state(const std::string &version, const int64_t download_state);
 };
 
 } // namespace test;
