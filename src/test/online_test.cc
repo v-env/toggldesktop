@@ -25,48 +25,62 @@
 #include "Poco/Event.h"
 
 
-static test::App *app;
+static struct {
+    test::App *app;
 
-static std::string name { test::App::randomUser() };
-static std::string pass { test::App::randomPassword() };
+    std::string name { test::App::randomUser() };
+    std::string pass { test::App::randomPassword() };
+
+    std::map<std::string, std::string> timeEntries;
+} testData;
 
 TEST(Base, Initialize) {
     std::cout << "Will test with the following credentials:" << std::endl;
-    std::cout << "Username: " << name << std::endl;
-    std::cout << "Password: " << pass << std::endl;
-    app = new test::App;
-    ASSERT_TRUE(app);
-    app->uiStart();
-    ASSERT_TRUE(app->isStarted());
+    std::cout << "Username: " << testData.name << std::endl;
+    std::cout << "Password: " << testData.pass << std::endl;
+    testData.app = new test::App;
+    ASSERT_TRUE(testData.app);
+    testData.app->uiStart();
+    ASSERT_TRUE(testData.app->isStarted());
 }
 
 TEST(Base, GetCountries) {
-    app->getCountries();
-    ASSERT_FALSE(app->countries().empty());
+    testData.app->getCountries();
+    ASSERT_FALSE(testData.app->countries().empty());
 }
 
 TEST(Base, Register) {
-    ASSERT_TRUE(app->signup(name, pass));
-    ASSERT_TRUE(app->isLoggedIn());
+    ASSERT_TRUE(testData.app->signup(testData.name, testData.pass));
+    ASSERT_TRUE(testData.app->isLoggedIn());
 }
 
 TEST(Base, LogOut) {
-    ASSERT_TRUE(app->isLoggedIn());
-    ASSERT_TRUE(app->logout());
-    ASSERT_FALSE(app->isLoggedIn());
+    ASSERT_TRUE(testData.app->isLoggedIn());
+    ASSERT_TRUE(testData.app->logout());
+    ASSERT_FALSE(testData.app->isLoggedIn());
 }
 
 TEST(Base, LogIn) {
-    ASSERT_FALSE(app->isLoggedIn());
-    ASSERT_TRUE(app->login(name, pass));
-    ASSERT_TRUE(app->isLoggedIn());
+    ASSERT_FALSE(testData.app->isLoggedIn());
+    ASSERT_TRUE(testData.app->login(testData.name, testData.pass));
+    ASSERT_TRUE(testData.app->isLoggedIn());
 }
 
 TEST(TimeEntry, Start) {
-    auto guid = app->start("Time Entry");
+    auto guid = testData.app->start("Time Entry");
+    testData.timeEntries[guid] = "Time Entry";
     ASSERT_FALSE(guid.empty());
-    ASSERT_EQ(app->runningTimeEntry().name_, "Time Entry");
-    ASSERT_EQ(app->runningTimeEntry().guid_, guid);
+    ASSERT_EQ(testData.app->runningTimeEntry().name_, "Time Entry");
+    ASSERT_EQ(testData.app->runningTimeEntry().guid_, guid);
+}
+
+TEST(TimeEntry, Stop) {
+    ASSERT_TRUE(testData.timeEntries.size() == 1);
+    ASSERT_EQ(testData.app->runningTimeEntry().guid_, testData.timeEntries.begin()->first);
+    ASSERT_EQ(testData.app->runningTimeEntry().name_, testData.timeEntries.begin()->second);
+
+    ASSERT_TRUE(testData.app->stop());
+    ASSERT_TRUE(testData.app->runningTimeEntry().guid_.empty());
 }
 
 /*
