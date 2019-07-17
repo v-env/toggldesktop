@@ -116,8 +116,60 @@ bool App::stop() {
     return ret;
 }
 
+bool App::timeEntry_setDescription(const std::string &guid, const std::string &value) {
+    auto ret = toggl_set_time_entry_description(context_, guid.c_str(), value.c_str());
+    test::Dispatcher::dispatch();
+    return ret;
+}
+
+bool App::timeEntry_setStart(const std::string &guid, const std::string &value) {
+    auto ret = toggl_set_time_entry_start(context_, guid.c_str(), value.c_str());
+    test::Dispatcher::dispatch();
+    return ret;
+}
+
+bool App::timeEntry_setEnd(const std::string &guid, const std::string &value) {
+    auto ret = toggl_set_time_entry_end(context_, guid.c_str(), value.c_str());
+    test::Dispatcher::dispatch();
+    return ret;
+}
+
+bool App::timeEntry_setDuration(const std::string &guid, const std::string &value) {
+    auto ret = toggl_set_time_entry_duration(context_, guid.c_str(), value.c_str());
+    test::Dispatcher::dispatch();
+    return ret;
+}
+
+bool App::timeEntry_setBillable(const std::string &guid, bool value) {
+    auto ret = toggl_set_time_entry_billable(context_, guid.c_str(), value);
+    test::Dispatcher::dispatch();
+    return ret;
+}
+
+bool App::timeEntry_setTags(const std::string &guid, const std::list<std::string> &value) {
+    std::string merged;
+    for (auto it = value.begin(); it != value.end(); it++) {
+        merged += *it;
+        if (std::next(it) != value.end())
+            merged += "\t";
+    }
+    auto ret = toggl_set_time_entry_tags(context_, guid.c_str(), merged.c_str());
+    test::Dispatcher::dispatch();
+    return ret;
+}
+
+bool App::timeEntry_setDate(const std::string &guid, int64_t value) {
+    auto ret = toggl_set_time_entry_date(context_, guid.c_str(), value);
+    test::Dispatcher::dispatch();
+    return ret;
+}
+
 const std::set<Country> &App::countries() const {
     return countries_;
+}
+
+const std::list<TimeEntry> &App::timeEntries() const {
+    return timeEntries_;
 }
 
 void test::App::on_app(bool open) {
@@ -173,6 +225,7 @@ void test::App::on_help_articles(const std::list<test::HelpArticle> &list) {
 
 void test::App::on_time_entry_list(bool open, const std::list<test::TimeEntry> &list, bool show_load_more) {
     WHEREAMI;
+    timeEntries_ = std::list<test::TimeEntry>(list);
 }
 
 void test::App::on_time_entry_autocomplete(const std::list<test::Autocomplete> &list) {

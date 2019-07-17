@@ -68,76 +68,155 @@ TEST(Base, LogIn) {
 
 TEST(TimeEntry, Start) {
     auto guid = testData.app->start("Time Entry");
-    testData.timeEntries[guid] = "Time Entry";
     ASSERT_FALSE(guid.empty());
+    testData.timeEntries[guid] = "Time Entry";
     ASSERT_EQ(testData.app->runningTimeEntry().name_, "Time Entry");
     ASSERT_EQ(testData.app->runningTimeEntry().guid_, guid);
 }
 
 TEST(TimeEntry, Stop) {
-    ASSERT_TRUE(testData.timeEntries.size() == 1);
+    ASSERT_EQ(testData.timeEntries.size(), 1);
     ASSERT_EQ(testData.app->runningTimeEntry().guid_, testData.timeEntries.begin()->first);
+    auto oldGuid = testData.app->runningTimeEntry().guid_;
     ASSERT_EQ(testData.app->runningTimeEntry().name_, testData.timeEntries.begin()->second);
 
     ASSERT_TRUE(testData.app->stop());
     ASSERT_TRUE(testData.app->runningTimeEntry().guid_.empty());
+
+    ASSERT_EQ(testData.app->timeEntries().begin()->guid_, oldGuid);
 }
 
-/*
-int main(int argc, char **argv) {
-    srand(time(nullptr));
+TEST(TimeEntry, SetStart) {
+    ASSERT_TRUE(testData.app->timeEntries().size() == 1);
+    auto guid = testData.timeEntries.begin()->first;
 
-    std::cerr << "Starting\n";
-    Poco::File f(TESTDB);
-    if (f.exists()) {
-        f.remove(false);
-    }
+    ASSERT_TRUE(testData.app->timeEntry_setStart(guid, "12:00 PM"));
+    ASSERT_EQ(testData.app->timeEntries().begin()->startedString_, "12:00 PM");
 
-
-    test::App *app = new test::App;
-
-    app->getCountries();
-
-    app->uiStart();
-
-    std::string name = test::App::randomUser();
-    std::string pass = test::App::randomPassword();
-    app->signup(name, pass);
-    std::cerr << "Is user logged in: " << app->isLoggedIn() << std::endl;
-
-    app->logout();
-    std::cerr << "Is user logged in: " << app->isLoggedIn() << std::endl;
-
-    app->login(name, pass);
-    std::cerr << "Is user logged in: " << app->isLoggedIn() << std::endl;
-
-    //toggl_create_client(app->context_, workspace, "Client Eastwood");
-    //test::Dispatcher::dispatch();
-    */
-/*
-    auto guid_1 = toggl_start(app->context_, "First", "", 0, 0, nullptr, nullptr, false);
-    test::Dispatcher::dispatch();
-    toggl_stop(app->context_, false);
-    test::Dispatcher::dispatch();
-    auto guid_2 = toggl_start(app->context_, "Second", "", 0, 0, nullptr, nullptr, false);
-    test::Dispatcher::dispatch();
-    toggl_stop(app->context_, false);
-    test::Dispatcher::dispatch();
-    toggl_set_time_entry_start(app->context_, guid_1, "12:00");
-    test::Dispatcher::dispatch();
-    toggl_set_time_entry_duration(app->context_, guid_1, "13:00");
-    test::Dispatcher::dispatch();
-    toggl_set_time_entry_start(app->context_, guid_2, "15:00");
-    test::Dispatcher::dispatch();
-    toggl_set_time_entry_duration(app->context_, guid_2, "14:00");
-    test::Dispatcher::dispatch();
-    auto guid_3 = toggl_start(app->context_, "Third", "", 0, 0, nullptr, nullptr, false);
-    test::Dispatcher::dispatch();
-*/
-/*
-    while (true) {
-        test::Dispatcher::dispatch();
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-    }
+    ASSERT_TRUE(testData.app->timeEntries().size() == 1);
 }
-*/
+
+TEST(TimeEntry, SetStartInvalidTime) {
+    ASSERT_TRUE(testData.app->timeEntries().size() == 1);
+    auto guid = testData.timeEntries.begin()->first;
+
+    ASSERT_FALSE(testData.app->timeEntry_setStart(guid, "123:00 PM"));
+    // this succeeds, it probably should not
+    //ASSERT_FALSE(testData.app->timeEntry_setStart(guid, "12:1 PPM"));
+    ASSERT_FALSE(testData.app->timeEntry_setStart(guid, "12:123 PM"));
+    ASSERT_FALSE(testData.app->timeEntry_setStart(guid, "PM:PM PM"));
+    ASSERT_FALSE(testData.app->timeEntry_setStart(guid, "PM:    AM PM"));
+    ASSERT_FALSE(testData.app->timeEntry_setStart(guid, "6354651"));
+    ASSERT_FALSE(testData.app->timeEntry_setStart(guid, "AAAAAAAAAAAA"));
+    ASSERT_FALSE(testData.app->timeEntry_setStart(guid, "|Bbdsf,§.v§ů.!ě§ů,+č§ůž§+ů,.§řůžý+,§ůlm, ůlm §ůvíé;uáé+hn"));
+    ASSERT_FALSE(testData.app->timeEntry_setStart(guid, "šš:čč"));
+
+    ASSERT_EQ(testData.app->timeEntries().begin()->startedString_, "12:00 PM");
+
+    ASSERT_TRUE(testData.app->timeEntries().size() == 1);
+}
+
+TEST(TimeEntry, SetStartInvalidGuid) {
+    ASSERT_TRUE(testData.app->timeEntries().size() == 1);
+    auto guid = "abcd";
+
+    // don't check, this doesn't actually return false (even though it should, in my opinion)
+    testData.app->timeEntry_setStart(guid, "11:00 AM");
+    // just check we didn't mess up the existing entry
+    ASSERT_EQ(testData.app->timeEntries().begin()->startedString_, "12:00 PM");
+
+    ASSERT_TRUE(testData.app->timeEntries().size() == 1);
+}
+
+TEST(TimeEntry, SetEnd) {
+    ASSERT_TRUE(testData.app->timeEntries().size() == 1);
+    auto guid = testData.timeEntries.begin()->first;
+
+    ASSERT_TRUE(testData.app->timeEntry_setEnd(guid, "01:00 PM"));
+    ASSERT_EQ(testData.app->timeEntries().begin()->endedString_, "01:00 PM");
+    auto duration = testData.app->timeEntries().begin()->ended_ - testData.app->timeEntries().begin()->started_;
+    ASSERT_EQ(duration, 3600);
+
+    ASSERT_TRUE(testData.app->timeEntries().size() == 1);
+}
+
+TEST(TimeEntry, SetEndInvalidTime) {
+    ASSERT_TRUE(testData.app->timeEntries().size() == 1);
+    auto guid = testData.timeEntries.begin()->first;
+
+    ASSERT_FALSE(testData.app->timeEntry_setEnd(guid, "123:00 PM"));
+    // this succeeds, it probably should not
+    //ASSERT_FALSE(testData.app->timeEntry_setStart(guid, "12:1 PPM"));
+    ASSERT_FALSE(testData.app->timeEntry_setEnd(guid, "12:123 PM"));
+    ASSERT_FALSE(testData.app->timeEntry_setEnd(guid, "PM:PM PM"));
+    ASSERT_FALSE(testData.app->timeEntry_setEnd(guid, "PM:    AM PM"));
+    ASSERT_FALSE(testData.app->timeEntry_setEnd(guid, "6354651"));
+    ASSERT_FALSE(testData.app->timeEntry_setEnd(guid, "AAAAAAAAAAAA"));
+    ASSERT_FALSE(testData.app->timeEntry_setEnd(guid, "|Bbdsf,§.v§ů.!ě§ů,+č§ůž§+ů,.§řůžý+,§ůlm, ůlm §ůvíé;uáé+hn"));
+    ASSERT_FALSE(testData.app->timeEntry_setEnd(guid, "šš:čč"));
+
+    ASSERT_EQ(testData.app->timeEntries().begin()->startedString_, "12:00 PM");
+
+    ASSERT_TRUE(testData.app->timeEntries().size() == 1);
+}
+
+TEST(TimeEntry, SetEndInvalidGuid) {
+    ASSERT_TRUE(testData.app->timeEntries().size() == 1);
+    auto guid = "abcd";
+
+    // don't check, this doesn't actually return false (even though it should, in my opinion)
+    testData.app->timeEntry_setEnd(guid, "02:00 PM");
+    // just check we didn't mess up the existing entry
+    ASSERT_EQ(testData.app->timeEntries().begin()->endedString_, "01:00 PM");
+
+    ASSERT_TRUE(testData.app->timeEntries().size() == 1);
+}
+
+TEST(TimeEntry, SetDuration) {
+    ASSERT_TRUE(testData.app->timeEntries().size() == 1);
+    auto guid = testData.timeEntries.begin()->first;
+
+    ASSERT_TRUE(testData.app->timeEntry_setDuration(guid, "2:00"));
+    ASSERT_EQ(testData.app->timeEntries().begin()->startedString_, "12:00 PM");
+    auto duration = testData.app->timeEntries().begin()->ended_ - testData.app->timeEntries().begin()->started_;
+    ASSERT_EQ(duration, 7200);
+
+    ASSERT_TRUE(testData.app->timeEntries().size() == 1);
+}
+
+TEST(TimeEntry, SetDurationInvalidGuid) {
+    ASSERT_TRUE(testData.app->timeEntries().size() == 1);
+    auto guid = "abcd";
+
+    // don't check, this doesn't actually return false (even though it should, in my opinion)
+    testData.app->timeEntry_setStart(guid, "3:00");
+    // just check we didn't mess up the existing entry
+    auto duration = testData.app->timeEntries().begin()->ended_ - testData.app->timeEntries().begin()->started_;
+    ASSERT_EQ(duration, 7200);
+
+    ASSERT_TRUE(testData.app->timeEntries().size() == 1);
+}
+
+TEST(TimeEntry, SetTags) {
+    ASSERT_TRUE(testData.app->timeEntries().size() == 1);
+    auto guid = testData.timeEntries.begin()->first;
+
+    ASSERT_TRUE(testData.app->timeEntry_setTags(guid, {"tag1", "tag2"}));
+    ASSERT_EQ(testData.app->timeEntries().begin()->tags_, std::list<std::string>({"tag1", "tag2"}));
+
+    ASSERT_TRUE(testData.app->timeEntries().size() == 1);
+}
+
+TEST(TimeEntry, SetTagsInvalidGuid) {
+    ASSERT_TRUE(testData.app->timeEntries().size() == 1);
+    auto guid = "abcd";
+
+    // don't check, this doesn't actually return false (even though it should, in my opinion)
+    testData.app->timeEntry_setTags(guid, {"tag3", "tag4"});
+    // just check we didn't mess up the existing entry
+    ASSERT_EQ(testData.app->timeEntries().begin()->tags_, std::list<std::string>({"tag1", "tag2"}));
+
+    ASSERT_TRUE(testData.app->timeEntries().size() == 1);
+}
+
+

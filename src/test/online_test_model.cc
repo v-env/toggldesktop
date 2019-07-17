@@ -1,5 +1,9 @@
 #include "online_test_model.h"
 
+#include <iterator>
+#include <iostream>
+#include <sstream>
+
 namespace test {
 
 test::Country::Country(const TogglCountryView *view)
@@ -42,7 +46,22 @@ test::TimeEntry::TimeEntry(const TogglTimeEntryView *view)
     : Model(view ? view->Description : "", view ? view->ID : 0)
 {
     if (view) {
-        guid_ = view->GUID;
+        if (view->GUID)
+            guid_ = view->GUID;
+        started_ = view->Started;
+        if (view->StartTimeString)
+            startedString_ = view->StartTimeString;
+        ended_ = view->Ended;
+        if (view->EndTimeString)
+            endedString_ = view->EndTimeString;
+
+        if (view->Tags) {
+            std::string intags { view->Tags };
+            std::stringstream ss(intags);
+            std::istream_iterator<std::string> begin(ss);
+            std::istream_iterator<std::string> end;
+            tags_ = std::list<std::string>(begin, end);
+        }
     }
 }
 

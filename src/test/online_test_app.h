@@ -21,7 +21,6 @@ public:
     static std::string randomPassword();
 
     void getCountries();
-    const std::set<Country> &countries() const;
 
     void uiStart();
     bool isStarted() const;
@@ -36,6 +35,17 @@ public:
     const TimeEntry &runningTimeEntry() const;
     bool stop();
 
+    bool timeEntry_setDescription(const std::string &guid, const std::string &value);
+    bool timeEntry_setStart(const std::string &guid, const std::string &value);
+    bool timeEntry_setEnd(const std::string &guid, const std::string &value);
+    bool timeEntry_setDuration(const std::string &guid, const std::string &value);
+    bool timeEntry_setBillable(const std::string &guid, bool value);
+    bool timeEntry_setTags(const std::string &guid, const std::list<std::string> &value);
+    bool timeEntry_setDate(const std::string &guid, int64_t value);
+
+    const std::set<Country> &countries() const;
+    const std::list<TimeEntry> &timeEntries() const;
+
 private:
     void *context_;
 
@@ -49,7 +59,7 @@ private:
     std::set<Project> projects_;
     std::set<Client> clients_;
     TimeEntry runningTimeEntry_;
-    std::set<TimeEntry> timeEntries_;
+    std::list<TimeEntry> timeEntries_;
     std::set<Tag> tags_;
     std::set<Autocomplete> timeEntryAutocomplete_;
     std::set<Autocomplete> miniTimerAutocomplete_;

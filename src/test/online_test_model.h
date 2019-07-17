@@ -62,6 +62,12 @@ struct Project : public Model {
 
 struct TimeEntry : public Model {
     TimeEntry(const TogglTimeEntryView *view = nullptr);
+    uint64_t started_;
+    std::string startedString_;
+    uint64_t ended_;
+    std::string endedString_;
+    std::list<std::string> tags_;
+    bool billable_;
 };
 
 struct Tag : public Model {
