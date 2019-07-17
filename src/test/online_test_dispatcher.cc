@@ -269,6 +269,7 @@ void Dispatcher::Worker::on_login(const bool_t open, const uint64_t user_id) {
 }
 
 void Dispatcher::Worker::on_error(const char *errmsg, const bool_t user_error) {
+    std::cerr << "Error occurred: " << errmsg << std::endl;
     std::scoped_lock l(tasks_lock);
     tasks.emplace_back(std::pair( Main::on_error, std::vector<TestType>{ std::string(errmsg), static_cast<bool>(user_error) } ));
 }
@@ -293,28 +294,27 @@ void Dispatcher::Worker::on_display_update_download_state(const char *version, c
     tasks.emplace_back(std::pair( Main::on_display_update_download_state, std::vector<TestType>{ std::string(version), download_state } ));
 }
 
-void Dispatcher::dispatch() {
-    while (true) {
-        std::unique_lock l(tasks_lock);
-        if (tasks.empty())
-            return;
-        auto task = tasks.front();
-        tasks.pop_front();
-        l.unlock();
-        task.first(task.second);
-    }
-}
-
-void Dispatcher::waitForEvents() {
+void Dispatcher::dispatch(bool waitForEvents) {
+    bool hasDispatched = false;
     while (true) {
         std::unique_lock l(tasks_lock);
         if (tasks.empty()) {
             l.unlock();
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            continue;
+            if (waitForEvents && !hasDispatched) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                continue;
+            }
+            else {
+                return;
+            }
         }
-        dispatch();
-        break;
+        else {
+            hasDispatched = true;
+            auto task = tasks.front();
+            tasks.pop_front();
+            l.unlock();
+            task.first(task.second);
+        }
     }
 }
 

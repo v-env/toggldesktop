@@ -43,10 +43,8 @@ public:
     static void wireUp(void *context, App *app);
 
     // dispatch looks if there are any pending calls from the library and executes them on the calling thread
-    static void dispatch();
-
-    // waits for when new events appear in the queue and executes them
-    static void waitForEvents();
+    // if waitForEvents is true, it will freeze until new events appear in the queue
+    static void dispatch(bool waitForEvents = false);
 
 private:
     // all of these methods get called by the "dispatch" method
