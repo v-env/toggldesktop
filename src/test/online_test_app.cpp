@@ -13,8 +13,10 @@ test::App::App() {
 
     Dispatcher::wireUp(context_, this);
 
+    std::remove("test.log");
     toggl_set_log_path("test.log");
 
+    std::remove(TESTDB);
     poco_assert(toggl_set_db_path(context_, TESTDB));
 
     Poco::Path path("src/ssl/cacert.pem");
@@ -44,7 +46,7 @@ std::string test::App::randomString(size_t length) {
 
 std::string test::App::randomUser() {
     srand(time(nullptr));
-    return randomString(16) + "@" + randomString(8) + ".toggldesktop-test.com";
+    return randomString(16) + "@" + "toggldesktop-test.com";
 }
 
 std::string test::App::randomPassword() {
