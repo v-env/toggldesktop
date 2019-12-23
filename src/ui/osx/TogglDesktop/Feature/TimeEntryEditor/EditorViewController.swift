@@ -48,11 +48,7 @@ final class EditorViewController: NSViewController {
         didSet {
             fillData(oldValue)
             registerUndoForAllFields()
-
-            // Check if the Editor has update with new TimeEntry -> Reset focus to Description TextField
-            // If not, just keep focus on current textfield
-            let defaultFocus = checkShouldFocusByDefault(for: oldValue, newValue: timeEntry)
-            setFocusOnTextField(shouldFocusByDefault: defaultFocus)
+            setFocusOnTextField()
         }
     }
     private var selectedProjectItem: ProjectContentItem?
@@ -433,7 +429,7 @@ extension EditorViewController {
         return oldValueGuid != newValueGuid
     }
 
-    fileprivate func setFocusOnTextField(shouldFocusByDefault: Bool) {
+    fileprivate func setFocusOnTextField() {
         guard let timeEntry = timeEntry,
             let focusedFieldName = timeEntry.focusedFieldName else { return }
 
@@ -451,9 +447,7 @@ extension EditorViewController {
                 view.window?.makeFirstResponder(firstTag.actionButton)
             }
         default:
-            if shouldFocusByDefault {
-                view.window?.makeFirstResponder(descriptionTextField)
-            }
+            view.window?.makeFirstResponder(descriptionTextField)
         }
     }
 }
