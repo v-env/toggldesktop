@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:toggl="clr-namespace:TogglDesktop"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
              d:DesignWidth="500"
              MinHeight="44"
@@ -122,17 +123,36 @@
                                 IsTabStop="False" Click="cancelProjectSelectionButtonClick"/>
                     </Grid>
                 </Grid>
-                <toggl:AutoCompletionPopup x:Name="descriptionAutoComplete" x:FieldModifier="private"
-                                           TextBox="{Binding ElementName=descriptionTextBox}"
-                                           Target="{Binding ElementName=editModeGrid}"
-                                           ConfirmCompletion="descriptionAutoComplete_OnConfirmCompletion"/>
-                <toggl:ExtendedTextBox x:Name="descriptionTextBox" x:FieldModifier="private"
-                                       Padding="5 1"
-                                       Margin="0 0 -1 0"
-                                       Height="Auto"
-                                       MinHeight="28"
-                                       MaxHeight="44"
-                                       Style="{StaticResource Toggl.Timer.DescriptionTextBox}"/>
+                <Grid x:Name="descriptionAndTimeGrid" x:FieldModifier="private"
+                      Margin="0 0 -1 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <toggl:AutoCompletionPopup x:Name="descriptionAutoComplete" x:FieldModifier="private"
+                                               TextBox="{Binding ElementName=descriptionTextBox}"
+                                               Target="{Binding ElementName=editModeGrid}"
+                                               ConfirmCompletion="descriptionAutoComplete_OnConfirmCompletion"/>
+
+                    <toggl:ExtendedTextBox x:Name="descriptionTextBox" x:FieldModifier="private"
+                                           Grid.Column="0"
+                                           Height="Auto"
+                                           MinHeight="28"
+                                           MaxHeight="44"
+                                           Padding="5 1"
+                                           Style="{StaticResource Toggl.Timer.DescriptionTextBox}"/>
+                    <TextBox Grid.Column="1" Width="64"
+                             x:Name="timeTextBox" x:FieldModifier="private"
+                             Style="{StaticResource Toggl.Timer.DescriptionTextBox}"
+                             mah:TextBoxHelper.Watermark="00:00"
+                             HorizontalContentAlignment="Right"
+                             FontWeight="SemiBold"
+                             FontSize="18"
+                             Height="Auto"
+                             MinHeight="28"
+                             MaxHeight="44"
+                             Padding="5 1"/>
+                </Grid>
             </DockPanel>
 
             <Border x:Name="durationPanel" x:FieldModifier="private"

@@ -180,7 +180,7 @@ namespace TogglDesktop
             {
                 this.manualAddButton.Focus();
             }
-            else if (this.descriptionTextBox.IsVisible)
+            else if (this.descriptionAndTimeGrid.IsVisible)
             {
                 this.descriptionTextBox.Focus();
             }
@@ -238,6 +238,11 @@ namespace TogglDesktop
                     IsMiniTimer
                 );
 
+                if (!string.IsNullOrEmpty(guid) && !string.IsNullOrEmpty(timeTextBox.Text))
+                {
+                    Toggl.SetTimeEntryDuration(guid, timeTextBox.Text);
+                }
+
                 if (completedProject.Billable)
                 {
                     Toggl.SetTimeEntryBillable(guid, true);
@@ -279,7 +284,7 @@ namespace TogglDesktop
             this.isRunning = running;
             this.startStopButton.IsChecked = running;
             this.descriptionTextBox.SetText("");
-            this.descriptionTextBox.ShowOnlyIf(!running);
+            this.descriptionAndTimeGrid.ShowOnlyIf(!running);
             this.timeEntryLabel.ShowOnlyIf(running);
             this.durationPanel.ShowOnlyIf(running);
             this.editProjectPanel.Visibility = Visibility.Collapsed;
