@@ -142,20 +142,13 @@ class TOGGL_INTERNAL_EXPORT HTTPClient {
     HTTPClient() {}
     virtual ~HTTPClient() {}
 
-    HTTPResponse Post(
-        HTTPRequest req, bool indicator = true) const;
+    HTTPResponse Post(HTTPRequest req) const;
 
-    HTTPResponse Get(
-        HTTPRequest req, bool indicator = true) const;
+    HTTPResponse Get(HTTPRequest req) const;
 
-    HTTPResponse GetFile(
-        HTTPRequest req, bool indicator = true) const;
+    HTTPResponse Delete(HTTPRequest req) const;
 
-    HTTPResponse Delete(
-        HTTPRequest req, bool indicator = true) const;
-
-    HTTPResponse Put(
-        HTTPRequest req, bool indicator = true) const;
+    HTTPResponse Put(HTTPRequest req) const;
 
     static HTTPClientConfig Config;
 
@@ -163,8 +156,7 @@ class TOGGL_INTERNAL_EXPORT HTTPClient {
     void SetIgnoreCert(bool ignore);
     
  protected:
-    virtual HTTPResponse request(
-        HTTPRequest req, bool indicator) const;
+    virtual HTTPResponse request(HTTPRequest req) const;
 
     virtual Logger logger() const;
 
@@ -193,11 +185,11 @@ class TOGGL_INTERNAL_EXPORT SyncStateMonitor {
     virtual void DisplaySyncState(const Poco::Int64 state) = 0;
 };
 
-class TOGGL_INTERNAL_EXPORT TogglClient : public HTTPClient {
+class TOGGL_INTERNAL_EXPORT TogglSyncClient : public HTTPClient {
 public:
     static ServerStatus TogglStatus;
-    static TogglClient& GetInstance() {
-        static TogglClient instance; // staic is thread-safe in C++11.
+    static TogglSyncClient& GetInstance() {
+        static TogglSyncClient instance; // staic is thread-safe in C++11.
         return instance;
     }
 
@@ -206,12 +198,27 @@ public:
     }
 
 protected:
-    virtual HTTPResponse request(HTTPRequest req, bool indicator) const override;
+    virtual HTTPResponse request(HTTPRequest req) const override;
+    virtual Logger logger() const override;
+
+private:
+    TogglSyncClient() {};
+    SyncStateMonitor *monitor_;
+};
+
+class TOGGL_INTERNAL_EXPORT TogglClient : public HTTPClient {
+public:
+    static ServerStatus TogglStatus;
+    static TogglClient &GetInstance() {
+        static TogglClient instance; // staic is thread-safe in C++11.
+        return instance;
+    }
+
+protected:
     virtual Logger logger() const override;
 
 private:
     TogglClient() {};
-    SyncStateMonitor *monitor_;
 };
 
 }  // namespace toggl

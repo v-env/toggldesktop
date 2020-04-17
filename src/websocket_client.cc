@@ -86,7 +86,7 @@ error WebSocketClient::createSession() {
 
     last_connection_at_ = time(nullptr);
 
-    error err = TogglClient::TogglStatus.Status();
+    error err = TogglSyncClient::TogglStatus.Status();
     if (err != noError) {
         logger().error("Will not start Websocket sessions, ", "because of known bad Toggl status: ", err);
         return err;

@@ -121,7 +121,7 @@ Context::Context(const std::string &app_name, const std::string &app_version)
 
     pomodoro_break_entry_ = nullptr;
 
-    TogglClient::GetInstance().SetSyncStateMonitor(UI());
+    TogglSyncClient::GetInstance().SetSyncStateMonitor(UI());
 }
 
 Context::~Context() {
@@ -217,7 +217,7 @@ void Context::stopActivities() {
         }
     }
 
-    TogglClient::TogglStatus.DisableStatusCheck();
+    TogglSyncClient::TogglStatus.DisableStatusCheck();
 }
 
 void Context::Shutdown() {
@@ -1438,7 +1438,7 @@ error Context::downloadUpdate() {
             req.relative_url = "/toggldesktop/assets/updates-link.txt";
 
             TogglClient client = TogglClient::GetInstance();
-            HTTPResponse resp = client.Get(req, false);
+            HTTPResponse resp = client.Get(req);
             if (resp.err != noError) {
                 return resp.err;
             }
@@ -1446,7 +1446,7 @@ error Context::downloadUpdate() {
             Poco::URI uri(resp.body);
             req.host = uri.getScheme() + "://" + uri.getHost();
             req.relative_url = uri.getPathEtc();
-            resp = client.Get(req, false);
+            resp = client.Get(req);
             if (resp.err != noError) {
                 return resp.err;
             }
@@ -1587,7 +1587,7 @@ error Context::fetchMessage(const bool periodic) {
             }
 
             TogglClient client = TogglClient::GetInstance();
-            HTTPResponse resp = client.Get(req, false);
+            HTTPResponse resp = client.Get(req);
             if (resp.err != noError) {
                 return resp.err;
             }
@@ -1812,7 +1812,7 @@ void Context::onTimelineUpdateServerSettings(Poco::Util::TimerTask&) {  // NOLIN
     req.basic_auth_username = apitoken;
     req.basic_auth_password = "api_token";
 
-    HTTPResponse resp = TogglClient::GetInstance().Post(req);
+    HTTPResponse resp = TogglSyncClient::GetInstance().Post(req);
     if (resp.err != noError) {
         displayError(resp.err);
         logger.error(resp.body);
@@ -1917,7 +1917,7 @@ void Context::onSendFeedback(Poco::Util::TimerTask&) {  // NOLINT
     req.basic_auth_password = api_token_name;
     req.form = &form;
 
-    HTTPResponse resp = TogglClient::GetInstance().Post(req);
+    HTTPResponse resp = TogglSyncClient::GetInstance().Post(req);
     logger.debug("Feedback result: " + resp.err);
     if (resp.err != noError) {
         displayError(resp.err);
@@ -2346,7 +2346,7 @@ void Context::SetEnvironment(const std::string &value) {
     logger.debug("SetEnvironment " + value);
     environment_ = value;
 
-    TogglClient::GetInstance().SetIgnoreCert(("development" == environment_));
+    TogglSyncClient::GetInstance().SetIgnoreCert(("development" == environment_));
     urls::SetRequestsAllowed("test" != environment_);
 }
 
@@ -4211,7 +4211,7 @@ error Context::OpenReportsInBrowser() {
     req.basic_auth_username = apitoken;
     req.basic_auth_password = "api_token";
 
-    HTTPResponse resp = TogglClient::GetInstance().Post(req);
+    HTTPResponse resp = TogglSyncClient::GetInstance().Post(req);
     if (resp.err != noError) {
         return displayError(resp.err);
     }
@@ -4902,7 +4902,7 @@ void Context::onLoadMore(Poco::Util::TimerTask&) {
         req.basic_auth_username = api_token;
         req.basic_auth_password = "api_token";
 
-        HTTPResponse resp = TogglClient::GetInstance().Get(req);
+        HTTPResponse resp = TogglSyncClient::GetInstance().Get(req);
         if (resp.err != noError) {
             logger.warning(resp.err);
             return;
@@ -5192,7 +5192,7 @@ error Context::pushClients(
         req.basic_auth_username = api_token;
         req.basic_auth_password = "api_token";
 
-        HTTPResponse resp = TogglClient::GetInstance().Post(req);
+        HTTPResponse resp = TogglSyncClient::GetInstance().Post(req);
 
         if (resp.err != noError) {
             // if we're able to solve the error
@@ -5248,7 +5248,7 @@ error Context::pushProjects(
         req.basic_auth_username = api_token;
         req.basic_auth_password = "api_token";
 
-        HTTPResponse resp = TogglClient::GetInstance().Post(req);
+        HTTPResponse resp = TogglSyncClient::GetInstance().Post(req);
 
         if (resp.err != noError) {
             // if we're able to solve the error
@@ -5330,11 +5330,11 @@ error Context::pushEntries(
 
         if ((*it)->NeedsDELETE()) {
             req.payload = "";
-            resp = TogglClient::GetInstance().Delete(req);
+            resp = TogglSyncClient::GetInstance().Delete(req);
         } else if ((*it)->ID()) {
-            resp = TogglClient::GetInstance().Put(req);
+            resp = TogglSyncClient::GetInstance().Put(req);
         } else {
-            resp = TogglClient::GetInstance().Post(req);
+            resp = TogglSyncClient::GetInstance().Post(req);
         }
 
         if (resp.err != noError) {
@@ -5428,7 +5428,7 @@ error Context::pullObmExperiments() {
         req.basic_auth_username = apitoken;
         req.basic_auth_password = "api_token";
 
-        HTTPResponse resp = TogglClient::GetInstance().Get(req);
+        HTTPResponse resp = TogglSyncClient::GetInstance().Get(req);
         if (resp.err != noError) {
             return resp.err;
         }
@@ -5505,7 +5505,7 @@ error Context::pushObmAction() {
 
         logger.debug(req.payload);
 
-        HTTPResponse resp = TogglClient::GetInstance().Post(req, false);
+        HTTPResponse resp = TogglClient::GetInstance().Post(req);
         if (resp.err != noError) {
             // backend responds 204 on success
             if (resp.status_code != 204) {
@@ -5549,7 +5549,7 @@ error Context::me(
         ss << "/api/"
            << kAPIV8
            << "/me"
-           << "?app_name=" << TogglClient::Config.AppName
+           << "?app_name=" << TogglSyncClient::Config.AppName
            << "&with_related_data=true";
         if (since) {
             ss << "&since=" << since;
@@ -5561,7 +5561,7 @@ error Context::me(
         req.basic_auth_username = email;
         req.basic_auth_password = password;
 
-        HTTPResponse resp = TogglClient::GetInstance().Get(req);
+        HTTPResponse resp = TogglSyncClient::GetInstance().Get(req);
         if (resp.err != noError) {
             return resp.err;
         }
@@ -5625,7 +5625,7 @@ error Context::pullWorkspaces() {
         req.basic_auth_username = api_token;
         req.basic_auth_password = "api_token";
 
-        HTTPResponse resp = TogglClient::GetInstance().Get(req);
+        HTTPResponse resp = TogglSyncClient::GetInstance().Get(req);
         if (resp.err != noError) {
             if (resp.err.find(kForbiddenError) != std::string::npos) {
                 // User has no workspaces
@@ -5712,7 +5712,7 @@ error Context::pullWorkspacePreferences(
         req.basic_auth_username = api_token;
         req.basic_auth_password = "api_token";
 
-        HTTPResponse resp = TogglClient::GetInstance().Get(req);
+        HTTPResponse resp = TogglSyncClient::GetInstance().Get(req);
         if (resp.err != noError) {
             return resp.err;
         }
@@ -5747,7 +5747,7 @@ error Context::pullUserPreferences() {
         req.basic_auth_username = api_token;
         req.basic_auth_password = "api_token";
 
-        HTTPResponse resp = TogglClient::GetInstance().Get(req);
+        HTTPResponse resp = TogglSyncClient::GetInstance().Get(req);
         if (resp.err != noError) {
             return resp.err;
         }
@@ -5829,14 +5829,14 @@ error Context::signUpWithProvider(
         user["workspace"] = ws;
 
         std::stringstream ss;
-        ss << "/api/v9/signup?app_name=" << TogglClient::Config.AppName;
+        ss << "/api/v9/signup?app_name=" << TogglSyncClient::Config.AppName;
 
         HTTPRequest req;
         req.host = urls::API();
         req.relative_url = ss.str();
         req.payload = Json::StyledWriter().write(user);
 
-        HTTPResponse resp = TogglClient::GetInstance().Post(req);
+        HTTPResponse resp = TogglSyncClient::GetInstance().Post(req);
         if (resp.err != noError) {
             if (kBadRequestError == resp.err) {
                 return resp.body;
@@ -5900,7 +5900,7 @@ error Context::signup(
         req.relative_url = "/api/v9/signup";
         req.payload = Json::StyledWriter().write(user);
 
-        HTTPResponse resp = TogglClient::GetInstance().Post(req);
+        HTTPResponse resp = TogglSyncClient::GetInstance().Post(req);
         if (resp.err != noError) {
             if (kBadRequestError == resp.err) {
                 return resp.body;
@@ -5982,7 +5982,7 @@ error Context::ToSAccept() {
         req.basic_auth_username = api_token;
         req.basic_auth_password = "api_token";
 
-        HTTPResponse resp = TogglClient::GetInstance().Post(req);
+        HTTPResponse resp = TogglSyncClient::GetInstance().Post(req);
         if (resp.err != noError) {
             return displayError(resp.err);
         }
@@ -6020,7 +6020,7 @@ error Context::PullCountries() {
         HTTPRequest req;
         req.host = urls::API();
         req.relative_url = "/api/v9/countries";
-        HTTPResponse resp = TogglClient::GetInstance().Get(req);
+        HTTPResponse resp = TogglSyncClient::GetInstance().Get(req);
         if (resp.err != noError) {
             return resp.err;
         }

@@ -231,39 +231,27 @@ error HTTPClient::statusCodeToError(const Poco::Int64 status_code) const {
     return kCannotConnectError;
 }
 
-HTTPResponse HTTPClient::Post(
-    HTTPRequest req, bool indicator) const {
+HTTPResponse HTTPClient::Post(HTTPRequest req) const {
     req.method = Poco::Net::HTTPRequest::HTTP_POST;
-    return request(req, indicator);
+    return request(req);
 }
 
-HTTPResponse HTTPClient::Get(
-    HTTPRequest req, bool indicator) const {
+HTTPResponse HTTPClient::Get(HTTPRequest req) const {
     req.method = Poco::Net::HTTPRequest::HTTP_GET;
-    return request(req, indicator);
+    return request(req);
 }
 
-HTTPResponse HTTPClient::GetFile(
-    HTTPRequest req, bool indicator) const {
-    req.method = Poco::Net::HTTPRequest::HTTP_GET;
-    req.timeout_seconds = kHTTPClientTimeoutSeconds * 10;
-    return request(req, indicator);
-}
-
-HTTPResponse HTTPClient::Delete(
-    HTTPRequest req, bool indicator) const {
+HTTPResponse HTTPClient::Delete(HTTPRequest req) const {
     req.method = Poco::Net::HTTPRequest::HTTP_DELETE;
-    return request(req, indicator);
+    return request(req);
 }
 
-HTTPResponse HTTPClient::Put(
-    HTTPRequest req, bool indicator) const {
+HTTPResponse HTTPClient::Put(HTTPRequest req) const {
     req.method = Poco::Net::HTTPRequest::HTTP_PUT;
-    return request(req, indicator);
+    return request(req);
 }
 
-HTTPResponse HTTPClient::request(
-    HTTPRequest req, bool indicator) const {
+HTTPResponse HTTPClient::request(HTTPRequest req) const {
     HTTPResponse resp = makeHttpRequest(req);
 
     if (kCannotConnectError == resp.err && isRedirect(resp.status_code)) {
@@ -507,14 +495,17 @@ std::string HTTPClient::clientIDForRefererHeader() const {
     return "";
 }
 
-ServerStatus TogglClient::TogglStatus;
+ServerStatus TogglSyncClient::TogglStatus;
 
-Logger TogglClient::logger() const {
+Logger TogglSyncClient::logger() const {
     return { "TogglClient" };
 }
 
-HTTPResponse TogglClient::request(
-    HTTPRequest req, bool indicator) const {
+Logger TogglClient::logger() const {
+    return { "TogglClientSimple" };
+}
+
+HTTPResponse TogglSyncClient::request(HTTPRequest req) const {
 
     error err = TogglStatus.Status();
     if (err != noError) {
@@ -524,13 +515,13 @@ HTTPResponse TogglClient::request(
         return resp;
     }
 
-    if (monitor_ && indicator) {
+    if (monitor_) {
         monitor_->DisplaySyncState(kSyncStateWork);
     }
 
-    HTTPResponse resp = HTTPClient::request(req, indicator);
+    HTTPResponse resp = HTTPClient::request(req);
 
-    if (monitor_ && indicator) {
+    if (monitor_) {
         monitor_->DisplaySyncState(kSyncStateIdle);
     }
 
